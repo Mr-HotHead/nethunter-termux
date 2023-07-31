@@ -39,7 +39,7 @@ _(BTW sorry for the late update, I didn't check the installer and I didn't even 
 8)Now **type** `cd` then `ls`,it will show you two files **kalifs-arm64-full.tar.xz** and **kalifs-arm64-full.tar.xz.st**,remove those files by typing `rm -rf kalifs-arm64-full.tar.xz` and `rm -rf kalifs-arm64-full.tar.xz.st`
 >These files have the corrupted OS,so we don't need them
 
-9)Now **go to** [The OS download page](https://images.kali.org/nethunter/kalifs-arm64-full.tar.xz),a 1.4GB file will be downloaded
+9)Now **go to** [The OS download page](https://images.kali.org/nethunter/kalifs-arm64-full.tar.xz),a 1.7GB file will be downloaded
 >This is the Kali-Nethunter OS which doesn't have its rootfs corrupted
 
 10)After the Download is finished,come back to Termux and **go to** the folder where the OS file is downloaded,now **move** the OS file to the home directory by **typing** `mv kalifs-arm64-full.tar.xz. /data/data/com.termux/files/home`
