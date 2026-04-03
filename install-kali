@@ -195,21 +195,37 @@ install_download() {
 create_shortcuts() {
     msg "Creating shortcuts..."
 
-    # nh shortcut — runs kali as user
-    cat > "${PREFIX}/bin/nh" << 'NHEOF'
+    # nethunter — main launcher (compatible with original flags)
+    cat > "${PREFIX}/bin/nethunter" << 'NHEOF'
 #!/data/data/com.termux/files/usr/bin/bash
-exec proot-distro login kali -- "$@"
+# Kali NetHunter launcher via proot-distro
+# Usage:
+#   nethunter           — login as user kali
+#   nethunter -r        — login as root
+#   nethunter <cmd>     — run command as kali
+#   nethunter -r <cmd>  — run command as root
+#   nethunter kex ...   — KeX VNC commands
+
+USER_LOGIN="--user kali"
+
+# Handle -r / -R flag for root
+if [[ "${1-}" == "-r" || "${1-}" == "-R" ]]; then
+    USER_LOGIN="--user root"
+    shift
+fi
+
+if [ $# -eq 0 ]; then
+    exec proot-distro login kali $USER_LOGIN
+else
+    exec proot-distro login kali $USER_LOGIN -- "$@"
+fi
 NHEOF
-    chmod 755 "${PREFIX}/bin/nh"
+    chmod 755 "${PREFIX}/bin/nethunter"
 
-    # nh-root shortcut — runs kali as root (default for proot-distro)
-    cat > "${PREFIX}/bin/nh-root" << 'NHREOF'
-#!/data/data/com.termux/files/usr/bin/bash
-exec proot-distro login kali --user root -- "$@"
-NHREOF
-    chmod 755 "${PREFIX}/bin/nh-root"
+    # nh — shortcut for nethunter
+    ln -sf "${PREFIX}/bin/nethunter" "${PREFIX}/bin/nh"
 
-    ok "Shortcuts: 'nh' (login), 'nh-root' (root login)"
+    ok "Shortcuts: 'nethunter' / 'nh' (login as kali), 'nethunter -r' (root)"
 }
 
 do_remove() {
@@ -223,7 +239,7 @@ do_remove() {
     fi
 
     rm -f "${PLUGIN_DIR}/${KALI_ALIAS}.sh"
-    rm -f "${PREFIX}/bin/nh" "${PREFIX}/bin/nh-root"
+    rm -f "${PREFIX}/bin/nethunter" "${PREFIX}/bin/nh"
 
     # Remove symlink if exists
     [ -L "${HOME}/kali-arm64" ] && rm -f "${HOME}/kali-arm64"
@@ -233,11 +249,12 @@ do_remove() {
 
 print_usage() {
     msg "Usage:"
-    printf "  proot-distro login kali          # Login as root\n"
-    printf "  proot-distro login kali --user kali  # Login as kali user\n"
-    printf "  nh                               # Quick login\n"
-    printf "  nh-root                          # Quick root login\n"
-    printf "  proot-distro remove kali         # Uninstall\n"
+    printf "  nethunter             # Login as kali user\n"
+    printf "  nethunter -r          # Login as root\n"
+    printf "  nethunter kex passwd  # Set KeX password\n"
+    printf "  nethunter kex start   # Start KeX GUI\n"
+    printf "  nh                    # Shortcut for nethunter\n"
+    printf "  nh -r                 # Shortcut for root\n"
 }
 
 # ─── Main ───────────────────────────────────────────────────────────────
